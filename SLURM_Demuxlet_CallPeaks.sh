@@ -20,6 +20,10 @@
 #Code applies to the following software versions:
 #macs2 2.1.1.20160309
 ##############################################################################################
+#load python 2.7.13 since MACS2 isnt compatible with python3 at the moment
+PATH=/share/PI/howchang/users/mcorces/tools/python/virtualenv/python-2.7.13/bin:$PATH
+##############################################################################################
+
 
 MANIFEST=$1
 OUTDIR=$2

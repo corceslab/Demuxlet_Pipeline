@@ -33,6 +33,7 @@ MANIFEST=$1
 MPILEUP_DIR=$2
 AFFX=$3
 OUTDIR=$4
+SOURCE_DIR=$5
 
 #Get the current sample name using the SLURM_ARRAY_TASK_ID variable
 SAMPLE=`cat ${MANIFEST} | sed -n ${SLURM_ARRAY_TASK_ID}p | awk -F"\t" '{print $1}'`
@@ -49,6 +50,6 @@ then
 	echo -e "Birdseed-SNP file already exists! Skipping ${SAMPLE}"
 else
 	echo -e "No Birdseed-SNP file found for ${SAMPLE}. Submitting!"
-	Rscript /share/PI/howchang/users/mcorces/scripts/ATAC/SLURM_SampleGenotypeMixup_makeBirdseed.R --input $MPILEUP --affx $AFFX --outdir $OUTDIR
+	Rscript ${SOURCE_DIR}/SLURM_Demuxlet_makeBirdseed.R --input $MPILEUP --affx $AFFX --outdir $OUTDIR
 fi
 

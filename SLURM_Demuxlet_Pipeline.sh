@@ -1,11 +1,9 @@
 #!/bin/bash
 #Ryan Corces 11/27/18
-#---SLURM_SampleGenotypeMixup_Pipeline.sh
+#---SLURM_Demuxlet_Pipeline.sh
 #
-#Usage: bash /share/PI/howchang/users/mcorces/scripts/ATAC/SLURM_SampleGenotypeMixup_Pipeline.sh -m <Input_Manifest> ... <other options>
-#	where Input_Manifest is a tab-delimited file with each line representing a single BAM file in the format <Sample Name> \t <File_path_BAM> \t <condition> \t <bioRepID>
-#	where condition is the sample type (for example, cancer type from TCGA, or brain region from AD, or brain cohort). Just some way of grouping samples for plotting
-#	where bioRepID is an identifier that is shared across all samples from the same biological donor. These IDs are used to make the "in groups" for correlation
+#Usage: bash /share/PI/howchang/users/mcorces/scripts/ATAC/SLURM_Demuxlet_Pipeline.sh -m <Input_Manifest> ... <other options>
+#	where Input_Manifest is a tab-delimited file with each line representing a single BAM file in the format <Sample Name> \t <File_path_BAM>
 #
 #Other options include:
 #	-p 	Full directory path to a directory containing MACS2 peak calls (.narrowPeak format) for each sample in format <Sample Name>_peaks.narrowPeak
@@ -25,7 +23,6 @@
 #		I'm not sure what the actual limit is but this certainly happens when running more than 750 samples. In this case,
 #		the pipeline wont finish properly.
 #	2) This script expects all of the auxilary scripts to be present in the same directory
-#	3) Only hg38 is currently supported
 #
 #REQUIREMENTS:
 #macs2 needs to runable when called as "macs2"
@@ -42,13 +39,13 @@ NUMCORES=20 #the number of cores used for parallel correlation calculations
 #PIPELINE VARIABLES:
 #retrieve the source directory of this pipeline script
 SOURCE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
-CALL_PEAKS_PATH=${SOURCE_DIR}/SLURM_SampleGenotypeMixup_CallPeaks.sh
-PROCESS_PEAKS_PATH=${SOURCE_DIR}/SLURM_SampleGenotypeMixup_MergePeaks.sh
-GENOTYPE_PEAKS_PATH=${SOURCE_DIR}/SLURM_SampleGenotypeMixup_varscanGenotype.sh
-MPILEUP_REGIONS_PATH=${SOURCE_DIR}/SLURM_SampleGenotypeMixup_mpileup.sh
-MAKE_BIRDSEED_PATH=${SOURCE_DIR}/SLURM_SampleGenotypeMixup_makeBirdseed.sh
-CONCAT_BIRDSEED_PATH=${SOURCE_DIR}/SLURM_SampleGenotypeMixup_concatBirdseed.R
-CORRELATE_BIRDSEED_PATH=${SOURCE_DIR}/SLURM_SampleGenotypeMixup_SelfMatrixCorrelation.R
+CALL_PEAKS_PATH=${SOURCE_DIR}/SLURM_Demuxlet_CallPeaks.sh
+PROCESS_PEAKS_PATH=${SOURCE_DIR}/SLURM_Demuxlet_MergePeaks.sh
+GENOTYPE_PEAKS_PATH=${SOURCE_DIR}/SLURM_Demuxlet_varscanGenotype.sh
+MPILEUP_REGIONS_PATH=${SOURCE_DIR}/SLURM_Demuxlet_mpileup.sh
+MAKE_BIRDSEED_PATH=${SOURCE_DIR}/SLURM_Demuxlet_makeBirdseed.sh
+CONCAT_BIRDSEED_PATH=${SOURCE_DIR}/SLURM_Demuxlet_concatBirdseed.R
+CORRELATE_BIRDSEED_PATH=${SOURCE_DIR}/SLURM_Demuxlet_SelfMatrixCorrelation.R
 GENOME="hg38" #This can be changed at runtime using -g
 ##############################################################################################
 #MAIN:
@@ -280,7 +277,7 @@ BIRDSEED_DIR=${OUTPUT_DIR}/birdseed
 if [ "$SKIP" -le "$STEP" ];
 then
 	mkdir -p ${BIRDSEED_DIR}
-	JOB_STRING_BIRDSEED=$(sbatch --dependency=${DEPENDS} --array=1-${NUM_SAMPLES} ${MAKE_BIRDSEED_PATH} ${MANIFEST} ${MPILEUP_DIR} ${VCF_DIR}/All_SNPs_Merged_mergedPositions.bed ${BIRDSEED_DIR})
+	JOB_STRING_BIRDSEED=$(sbatch --dependency=${DEPENDS} --array=1-${NUM_SAMPLES} ${MAKE_BIRDSEED_PATH} ${MANIFEST} ${MPILEUP_DIR} ${VCF_DIR}/All_SNPs_Merged_mergedPositions.bed ${BIRDSEED_DIR} ${SOURCE_DIR})
 	JOB_ID_BIRDSEED=`echo $JOB_STRING_BIRDSEED | awk '{print $4}'`
 	DEPENDS="afterok:${JOB_ID_BIRDSEED}"
 else
@@ -288,18 +285,18 @@ else
 	DEPENDS=""
 fi
 #---------------------------------------------------------------------------------------------
-#STEP8 --- Concatenate Birdseed Files
-STEP=8
-#Check if SKIP is less than STEP, if so run this step
-if [ "$SKIP" -le "$STEP" ];
-then
-	JOB_STRING_CATBIRDSEED=$(sbatch --dependency=${DEPENDS} --output=${OUTPUT_DIR}/logs/concatBirdseed.log --mem=128000 --cpus-per-task=20 --time=01:00:00 --partition=howchang,sfgf --distribution=block --ntasks=1 --job-name=concatBirdseed --wrap="Rscript ${CONCAT_BIRDSEED_PATH} --inDir ${BIRDSEED_DIR} --outFile ${OUTPUT_DIR}/AllSNPs_FinalBirdseed_Concat.txt")
-	JOB_ID_CATBIRDSEED=`echo $JOB_STRING_CATBIRDSEED | awk '{print $4}'`
-	DEPENDS="afterok:${JOB_ID_CATBIRDSEED}"
-else
-	echo "Step ${STEP} [Concatenate Birdseed] was skipped due to command line input (-x ${SKIP})."
-	DEPENDS=""
-fi
+# #STEP8 --- Concatenate Birdseed Files
+# STEP=8
+# #Check if SKIP is less than STEP, if so run this step
+# if [ "$SKIP" -le "$STEP" ];
+# then
+# 	JOB_STRING_CATBIRDSEED=$(sbatch --dependency=${DEPENDS} --output=${OUTPUT_DIR}/logs/concatBirdseed.log --mem=128000 --cpus-per-task=20 --time=01:00:00 --partition=howchang,sfgf --distribution=block --ntasks=1 --job-name=concatBirdseed --wrap="Rscript ${CONCAT_BIRDSEED_PATH} --inDir ${BIRDSEED_DIR} --outFile ${OUTPUT_DIR}/AllSNPs_FinalBirdseed_Concat.txt")
+# 	JOB_ID_CATBIRDSEED=`echo $JOB_STRING_CATBIRDSEED | awk '{print $4}'`
+# 	DEPENDS="afterok:${JOB_ID_CATBIRDSEED}"
+# else
+# 	echo "Step ${STEP} [Concatenate Birdseed] was skipped due to command line input (-x ${SKIP})."
+# 	DEPENDS=""
+# fi
 #---------------------------------------------------------------------------------------------
 
 
