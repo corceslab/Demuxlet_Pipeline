@@ -12,6 +12,7 @@
 #		This option, when used, will skip the peak calling step.
 #	-o 	Full directory path to the desired output directory
 #	-x	Skip to this numbered step (must be an integer)
+#	-g <GENOME> = This option tells the pipeline which genome to use. Current supported values are "hg38" (default) and "hg19"
 #
 #Code applies to the following software versions:
 #bedtools v2.26.0
@@ -48,11 +49,11 @@ MPILEUP_REGIONS_PATH=${SOURCE_DIR}/SLURM_SampleGenotypeMixup_mpileup.sh
 MAKE_BIRDSEED_PATH=${SOURCE_DIR}/SLURM_SampleGenotypeMixup_makeBirdseed.sh
 CONCAT_BIRDSEED_PATH=${SOURCE_DIR}/SLURM_SampleGenotypeMixup_concatBirdseed.R
 CORRELATE_BIRDSEED_PATH=${SOURCE_DIR}/SLURM_SampleGenotypeMixup_SelfMatrixCorrelation.R
-GENOME="hg38" #THIS CANNOT BE CHANGED YET
+GENOME="hg38" #This can be changed at runtime using -g
 ##############################################################################################
 #MAIN:
 #Handle command line inputs using getopts
-while getopts ":m:o:p:x:" opt; do
+while getopts ":m:o:p:x:g:" opt; do
 	case $opt in
 	m)
 		if [[ -f ${OPTARG} ]];
@@ -95,6 +96,12 @@ while getopts ":m:o:p:x:" opt; do
 				echo "ERROR --- -x flag observed but provided argument is not a valid integer" >&2
 				exit 1
 		fi
+		;;
+	g)
+		case ${OPTARG} in
+			hg38 | hg19) GENOME=${OPTARG}; echo "-g flag observed. GENOME has been set to ${GENOME}." >&2;;
+			*) echo "ERROR --- -g flag observed but GENOME does not match one of the supported genomes: hg38, hg19" >&2; exit 1;;
+		esac
 		;;
 	\?)
 		echo "Invalid option: -$OPTARG" >&2
@@ -191,13 +198,13 @@ if [ "$SKIP" -le "$STEP" ];
 then
 	if [ $PEAKS -eq 1 ]
 	then
-		JOB_STRING_MERGEPEAKS=$(sbatch --dependency=${DEPENDS} --output=${OUTPUT_DIR}/logs/peakMerge.log --mem=128000 --cpus-per-task=20 --time=01:00:00 --partition=howchang,sfgf --distribution=block --ntasks=1 --job-name=peakMerge --wrap="bash ${PROCESS_PEAKS_PATH} ${PEAK_DIR}")
+		JOB_STRING_MERGEPEAKS=$(sbatch --dependency=${DEPENDS} --output=${OUTPUT_DIR}/logs/peakMerge.log --mem=128000 --cpus-per-task=20 --time=01:00:00 --partition=howchang,sfgf --distribution=block --ntasks=1 --job-name=peakMerge --wrap="bash ${PROCESS_PEAKS_PATH} ${PEAK_DIR} ${GENOME}")
 		JOB_ID_MERGEPEAKS=`echo $JOB_STRING_MERGEPEAKS | awk '{print $4}'`
 		DEPENDS="afterok:${JOB_ID_MERGEPEAKS}"
 	else
 		if [ ! -f ${PEAK_DIR}/MergedPeaks.srt.mrg.flt.narrowPeak ];
 		then
-			JOB_STRING_MERGEPEAKS=$(sbatch --dependency=${DEPENDS} --output=${OUTPUT_DIR}/logs/peakMerge.log --mem=128000 --cpus-per-task=20 --time=01:00:00 --partition=howchang,sfgf --distribution=block --ntasks=1 --job-name=peakMerge --wrap="bash ${PROCESS_PEAKS_PATH} ${PEAK_DIR}")
+			JOB_STRING_MERGEPEAKS=$(sbatch --dependency=${DEPENDS} --output=${OUTPUT_DIR}/logs/peakMerge.log --mem=128000 --cpus-per-task=20 --time=01:00:00 --partition=howchang,sfgf --distribution=block --ntasks=1 --job-name=peakMerge --wrap="bash ${PROCESS_PEAKS_PATH} ${PEAK_DIR} ${GENOME}")
 			JOB_ID_MERGEPEAKS=`echo $JOB_STRING_MERGEPEAKS | awk '{print $4}'`
 			DEPENDS="afterok:${JOB_ID_MERGEPEAKS}"
 		else
@@ -217,7 +224,7 @@ VCF_DIR=${OUTPUT_DIR}/vcf
 if [ "$SKIP" -le "$STEP" ];
 then
 	mkdir -p ${VCF_DIR}
-	JOB_STRING_VARSCAN=$(sbatch --dependency=${DEPENDS} --array=1-${NUM_SAMPLES} ${GENOTYPE_PEAKS_PATH} ${MANIFEST} ${PEAK_DIR}/MergedPeaks.srt.mrg.flt.narrowPeak ${VCF_DIR})
+	JOB_STRING_VARSCAN=$(sbatch --dependency=${DEPENDS} --array=1-${NUM_SAMPLES} ${GENOTYPE_PEAKS_PATH} ${MANIFEST} ${PEAK_DIR}/MergedPeaks.srt.mrg.flt.narrowPeak ${VCF_DIR} ${GENOME})
 	JOB_ID_VARSCAN=`echo $JOB_STRING_VARSCAN | awk '{print $4}'`
 	DEPENDS="afterok:${JOB_ID_VARSCAN}"
 else
@@ -258,7 +265,7 @@ MPILEUP_DIR=${OUTPUT_DIR}/mpileup
 if [ "$SKIP" -le "$STEP" ];
 then
 	mkdir -p ${MPILEUP_DIR}
-	JOB_STRING_MPILEUP=$(sbatch --dependency=${DEPENDS} --array=1-${NUM_SAMPLES} ${MPILEUP_REGIONS_PATH} ${MANIFEST} ${VCF_DIR}/All_SNPs_Merged_mergedPositions.bed ${MPILEUP_DIR})
+	JOB_STRING_MPILEUP=$(sbatch --dependency=${DEPENDS} --array=1-${NUM_SAMPLES} ${MPILEUP_REGIONS_PATH} ${MANIFEST} ${VCF_DIR}/All_SNPs_Merged_mergedPositions.bed ${MPILEUP_DIR} ${GENOME})
 	JOB_ID_MPILEUP=`echo $JOB_STRING_MPILEUP | awk '{print $4}'`
 	DEPENDS="afterok:${JOB_ID_MPILEUP}"
 else
@@ -294,16 +301,5 @@ else
 	DEPENDS=""
 fi
 #---------------------------------------------------------------------------------------------
-#STEP9 --- Correlate Birdseed using self-matrix correlation and plot / output stats
-STEP=9
-#Check if SKIP is less than STEP, if so run this step
-if [ "$SKIP" -le "$STEP" ];
-then
-	JOB_STRING_CORBIRDSEED=$(sbatch --dependency=${DEPENDS} --output=${OUTPUT_DIR}/logs/correlateBirdseed.log --mem=128000 --cpus-per-task=${NUMCORES} --time=48:00:00 --partition=howchang,sfgf --distribution=block --ntasks=1 --job-name=correlateBirdseed --wrap="Rscript ${CORRELATE_BIRDSEED_PATH} --inFile ${OUTPUT_DIR}/AllSNPs_FinalBirdseed_Concat.txt --cores ${NUMCORES} --outDir ${OUTPUT_DIR} --manifest ${MANIFEST}")
-	JOB_ID_CORBIRDSEED=`echo $JOB_STRING_CORBIRDSEED | awk '{print $4}'`
-	DEPENDS="afterok:${JOB_ID_CORBIRDSEED}"
-else
-	echo "Step ${STEP} [Correlate Birdseed] was skipped due to command line input (-x ${SKIP})."
-	DEPENDS=""
-fi
+
 

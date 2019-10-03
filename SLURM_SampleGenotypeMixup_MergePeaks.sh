@@ -16,10 +16,11 @@ module load bedtools/S2/2.26.0
 module load libpng/S2/1.2.57
 module load ucscTools/6.21.17
 
-BLACKLIST=${GENOMES}/hg38/hg38.blacklist.bed
-NUMTS=${GENOMES}/hg38/hg38_NumtS_Regions.bed
-
 PEAKS_DIR=$1
+GENOME=$2
+
+BLACKLIST=${GENOMES}/${GENOME}/${GENOME}.blacklist.bed
+NUMTS=${GENOMES}/${GENOME}/${GENOME}_NumtS_Regions.bed
 
 cd $PEAKS_DIR
 

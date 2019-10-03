@@ -21,14 +21,16 @@
 #Code applies to the following software versions:
 #bedtools v2.26.0
 #samtools v1.5
-
-##############################################################################################
-FASTA=${GENOMES}/hg38/hg38.fa
 ##############################################################################################
 
 MANIFEST=$1
 REGIONS=$2
 OUTDIR=$3
+GENOME=$4
+
+##############################################################################################
+FASTA=${GENOMES}/${GENOME}/${GENOME}.fa
+##############################################################################################
 
 #Get the current sample name using the SLURM_ARRAY_TASK_ID variable
 SAMPLE=`cat ${MANIFEST} | sed -n ${SLURM_ARRAY_TASK_ID}p | awk -F"\t" '{print $1}'`
