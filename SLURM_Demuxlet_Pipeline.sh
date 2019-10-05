@@ -120,11 +120,11 @@ while read LINE
 do
 	SAMPLE=`echo "$LINE" | awk -F"\t" '{print $1}'`
 	BAM=`echo "$LINE" | awk -F"\t" '{print $2}'`
-	INDEX=`echo "$BAM" | sed 's/.bam/.bam.bai/g'`
+	INDEX=`echo "$BAM" | sed 's/\.bam/\.bam\.bai/g'`
 	
 	if [ ! -f $INDEX ];
 	then
-		echo -e "Index file does not exist for ${SAMPLE} -- ${INDEX}"
+		echo -e "Index file does not exist for ${SAMPLE}"
 		FAILED=1
 	fi
 done < $MANIFEST
