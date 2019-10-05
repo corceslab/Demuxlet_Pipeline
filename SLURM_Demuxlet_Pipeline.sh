@@ -2,7 +2,7 @@
 #Ryan Corces 11/27/18
 #---SLURM_Demuxlet_Pipeline.sh
 #
-#Usage: bash /share/PI/howchang/users/mcorces/scripts/ATAC/SLURM_Demuxlet_Pipeline.sh -m <Input_Manifest> ... <other options>
+#Usage: bash <githubFolder>/SLURM_Demuxlet_Pipeline.sh -m <Input_Manifest> ... <other options>
 #	where Input_Manifest is a tab-delimited file with each line representing a single BAM file in the format <Sample Name> \t <File_path_BAM>
 #
 #Other options include:

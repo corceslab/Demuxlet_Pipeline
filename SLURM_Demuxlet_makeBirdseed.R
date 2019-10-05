@@ -31,8 +31,10 @@ library(optparse)
 library(seqinr)
 ################################################################################################
 #Global Variables and functions
-depthCutoff <- 20 #cutoff for depth in ATAC-seq data to make a genotyping call
-
+depthCutoff <- 5 #cutoff for depth in ATAC-seq data to make a genotyping call
+absAlleleRatio <- 0.7 #the ratio of the difference in counts over the total counts = 
+#                      (abs(alleleA_counts - alleleB_counts)/(alleleA_counts + alleleB_counts))
+#                      If this ratio is less than the supplied value, the site is considered heterozygous
 ################################################################################################
 ## Input variables
 
@@ -160,7 +162,7 @@ for (y in 1:nrow(snpsTruncated))
     currentCall <- 2 #if A = 0 counts, then it must be BB given minimum depth
   } else if (alleleB_counts == 0) {
     currentCall <- 0 #if B = 0 counts, then it must be AA given minimum depth
-  } else if ((abs(alleleA_counts - alleleB_counts)/(alleleA_counts + alleleB_counts)) < 0.5) {
+  } else if ((abs(alleleA_counts - alleleB_counts)/(alleleA_counts + alleleB_counts)) < absAlleleRatio) {
     currentCall <- 1 #if the counts for A and B are close to each other, it is heterozygous AB
   } else if (alleleA_counts > alleleB_counts) {
     currentCall <- 0 #otherwise, if A is greater than B, then it is AA
