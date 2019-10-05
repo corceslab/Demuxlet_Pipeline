@@ -1,0 +1,36 @@
+##fileformat=VCFv4.2
+##contig=<ID=1,length=2147483647>
+##contig=<ID=10,length=2147483647>
+##contig=<ID=11,length=2147483647>
+##contig=<ID=12,length=2147483647>
+##contig=<ID=13,length=2147483647>
+##contig=<ID=14,length=2147483647>
+##contig=<ID=15,length=2147483647>
+##contig=<ID=16,length=2147483647>
+##contig=<ID=17,length=2147483647>
+##contig=<ID=18,length=2147483647>
+##contig=<ID=19,length=2147483647>
+##contig=<ID=2,length=2147483647>
+##contig=<ID=20,length=2147483647>
+##contig=<ID=21,length=2147483647>
+##contig=<ID=22,length=2147483647>
+##contig=<ID=3,length=2147483647>
+##contig=<ID=4,length=2147483647>
+##contig=<ID=5,length=2147483647>
+##contig=<ID=6,length=2147483647>
+##contig=<ID=7,length=2147483647>
+##contig=<ID=8,length=2147483647>
+##contig=<ID=9,length=2147483647>
+##FILTER=<ID=PASS,Description="All filters passed">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+##FORMAT=<ID=DS,Number=1,Type=Float,Description="Estimated Alternate Allele Dosage : [P(0/1)+2*P(1/1)]">
+##FORMAT=<ID=GP,Number=3,Type=Float,Description="Estimated Posterior Probabilities for Genotypes 0/0, 0/1 and 1/1 ">
+##INFO=<ID=AN,Number=1,Type=Integer,Description="Total Allele Count">
+##INFO=<ID=AC,Number=A,Type=Integer,Description="Alternate Allele Count">
+##INFO=<ID=AF,Number=A,Type=Float,Description="Estimated Alternate Allele Frequency">
+##INFO=<ID=R2,Number=1,Type=Float,Description="Estimated Imputation Accuracy Across Multiple Imputed Datasets">
+##INFO=<ID=S2,Number=1,Type=Float,Description="Estimated Residual Variance of Imputed Genotypes">
+##INFO=<ID=R2A,Number=1,Type=Float,Description="Estimated Imputation Accuracy from First Imputed Dataset">
+##INFO=<ID=R2B,Number=1,Type=Float,Description="Estimated Imputation Accuracy from Second Imputed Dataset">
+##INFO=<ID=ER2A,Number=1,Type=Float,Description="Empirical (Leave-One-Out) R-square from first dataset (available only for genotyped variants)">
+##INFO=<ID=ER22,Number=1,Type=Float,Description="Empirical (Leave-One-Out) R-square from second dataset (available only for genotyped variants)">

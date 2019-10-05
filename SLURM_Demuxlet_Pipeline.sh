@@ -45,7 +45,7 @@ GENOTYPE_PEAKS_PATH=${SOURCE_DIR}/SLURM_Demuxlet_varscanGenotype.sh
 MPILEUP_REGIONS_PATH=${SOURCE_DIR}/SLURM_Demuxlet_mpileup.sh
 MAKE_BIRDSEED_PATH=${SOURCE_DIR}/SLURM_Demuxlet_makeBirdseed.sh
 CONCAT_BIRDSEED_PATH=${SOURCE_DIR}/SLURM_Demuxlet_concatBirdseed.R
-CORRELATE_BIRDSEED_PATH=${SOURCE_DIR}/SLURM_Demuxlet_SelfMatrixCorrelation.R
+DEMUXLET_VCF_PATH=${SOURCE_DIR}/SLURM_Demuxlet_makeDemuxletVCF.R
 GENOME="hg38" #This can be changed at runtime using -g
 ##############################################################################################
 #MAIN:
@@ -285,18 +285,18 @@ else
 	DEPENDS=""
 fi
 #---------------------------------------------------------------------------------------------
-# #STEP8 --- Concatenate Birdseed Files
-# STEP=8
-# #Check if SKIP is less than STEP, if so run this step
-# if [ "$SKIP" -le "$STEP" ];
-# then
-# 	JOB_STRING_CATBIRDSEED=$(sbatch --dependency=${DEPENDS} --output=${OUTPUT_DIR}/logs/concatBirdseed.log --mem=128000 --cpus-per-task=20 --time=01:00:00 --partition=howchang,sfgf --distribution=block --ntasks=1 --job-name=concatBirdseed --wrap="Rscript ${CONCAT_BIRDSEED_PATH} --inDir ${BIRDSEED_DIR} --outFile ${OUTPUT_DIR}/AllSNPs_FinalBirdseed_Concat.txt")
-# 	JOB_ID_CATBIRDSEED=`echo $JOB_STRING_CATBIRDSEED | awk '{print $4}'`
-# 	DEPENDS="afterok:${JOB_ID_CATBIRDSEED}"
-# else
-# 	echo "Step ${STEP} [Concatenate Birdseed] was skipped due to command line input (-x ${SKIP})."
-# 	DEPENDS=""
-# fi
+#STEP8 --- Create Demuxlet Input VCF
+STEP=8
+#Check if SKIP is less than STEP, if so run this step
+if [ "$SKIP" -le "$STEP" ];
+then
+	JOB_STRING_CATBIRDSEED=$(sbatch --dependency=${DEPENDS} --output=${OUTPUT_DIR}/logs/createDemuxletVCF.log --mem=25600 --cpus-per-task=4 --time=04:00:00 --partition=howchang,sfgf --distribution=block --ntasks=1 --job-name=createDemuxletVCF --wrap="Rscript ${DEMUXLET_VCF_PATH} --input ${OUTPUT_DIR}/birdseed --source ${SOURCE_DIR} --outdir ${OUTPUT_DIR}")
+	JOB_ID_CATBIRDSEED=`echo $JOB_STRING_CATBIRDSEED | awk '{print $4}'`
+	DEPENDS="afterok:${JOB_ID_CATBIRDSEED}"
+else
+	echo "Step ${STEP} [Concatenate Birdseed] was skipped due to command line input (-x ${SKIP})."
+	DEPENDS=""
+fi
 #---------------------------------------------------------------------------------------------
 
 
