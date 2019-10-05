@@ -74,24 +74,12 @@ print(paste("affx outfile = ",affx_outfile),sep="")
 
 #---- This Code is meant for NON-TCGA data where correlations are being made just from ATAC-seq. If using SNP arrays, use the above snippet.
 #Read in AFFX library file and remove unneccessary columns
-affx <- read.table(AFFX_file, header = TRUE, row.names=NULL, check.names = TRUE, colClasses= c("character","character","character","integer","integer","character","character","character","character","integer","integer","character","NULL","NULL","NULL"), sep="\t")
-
-#remove rows where the strand is unknown == "*"
-if(length(which(affx$hg38_strand == "*")) > 0)
-{
-  affx <- affx[-(which(affx$hg38_strand == "*")),]
-}
-
-#convert entries on negative strand to positive strand by taking complement
-if (length(which(affx$hg19_strand == "-")) > 0)
-{
-  affx$Allele_A[which(affx$hg19_strand == "-")] <- toupper(comp(affx$Allele_A[which(affx$hg19_strand == "-")]))
-  affx$Allele_B[which(affx$hg19_strand == "-")] <- toupper(comp(affx$Allele_B[which(affx$hg19_strand == "-")]))
-  affx$hg19_strand[which(affx$hg19_strand == "-")] <- "+"
-}
+affx <- read.table(AFFX_file, header = FALSE, row.names=NULL, check.names = TRUE, colClasses= c("character","integer","integer","character","character"), sep="\t")
+colnames(affx) <- c("chr","start","stop","Allele_A","Allele_B")
+affx$Probe_Set_ID <- rownames(affx)
 
 #make rownames indexable by joining chr and stop position
-rownames(affx) <- paste(affx$hg19_chr,affx$hg19_stop,sep="-")
+rownames(affx) <- paste(affx$chr,affx$stop,sep="-")
 
 #read in mpileup file
 vcf <- read.table(mpileup_file, header = FALSE, row.names = NULL, colClasses= c("character","integer","character","character","character","character","character","character","character","character"))
@@ -139,8 +127,8 @@ snpsTruncated <- snps[which(rowSums(data.matrix(snps[,c("A","C","G","T")])) > de
 affxSNPs <- data.frame(matrix(NA,nrow = nrow(affx), ncol = 8))
 colnames(affxSNPs) <- c("probeID","chr","pos","allele_A","allele_A_counts","allele_B","allele_B_counts","call")
 affxSNPs$probeID <- affx$Probe_Set_ID
-affxSNPs$chr <- affx$hg19_chr
-affxSNPs$pos <- affx$hg19_stop
+affxSNPs$chr <- affx$chr
+affxSNPs$pos <- affx$stop
 affxSNPs$allele_A <- affx$Allele_A
 affxSNPs$allele_B <- affx$Allele_B
 affxSNPs$call <- rep("-1",nrow(affxSNPs))
@@ -157,7 +145,6 @@ for (y in 1:nrow(snpsTruncated))
   affxIndex <- which(rownames(affx) == rownames(snpsTruncated)[y])
   try(if(length(affxIndex) != 1) stop(paste("ERROR - Duplicate entries identified in AFFX for snp ",rownames(snpsTruncated)[y],"!",sep="")))
   
-  print(affx[affxIndex,])
   #make call 0=AA, 1=AB, 2=BB, -1=no call
   #if either A or B counts is zero, then the call is easy
   #if the difference in counts between A and B is lower than 50% of the depth, then its heterzygous
