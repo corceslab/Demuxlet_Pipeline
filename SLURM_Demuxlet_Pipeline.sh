@@ -290,11 +290,11 @@ STEP=8
 #Check if SKIP is less than STEP, if so run this step
 if [ "$SKIP" -le "$STEP" ];
 then
-	JOB_STRING_CATBIRDSEED=$(sbatch --dependency=${DEPENDS} --output=${OUTPUT_DIR}/logs/createDemuxletVCF.log --mem=25600 --cpus-per-task=4 --time=04:00:00 --partition=howchang,sfgf --distribution=block --ntasks=1 --job-name=createDemuxletVCF --wrap="Rscript ${DEMUXLET_VCF_PATH} --input ${OUTPUT_DIR}/birdseed --source ${SOURCE_DIR} --outdir ${OUTPUT_DIR}")
-	JOB_ID_CATBIRDSEED=`echo $JOB_STRING_CATBIRDSEED | awk '{print $4}'`
-	DEPENDS="afterok:${JOB_ID_CATBIRDSEED}"
+	JOB_STRING_DEMUXLETVCF=$(sbatch --dependency=${DEPENDS} --output=${OUTPUT_DIR}/logs/createDemuxletVCF.log --mem=25600 --cpus-per-task=4 --time=04:00:00 --partition=howchang,sfgf --distribution=block --ntasks=1 --job-name=createDemuxletVCF --wrap="Rscript ${DEMUXLET_VCF_PATH} --input ${OUTPUT_DIR}/birdseed --source ${SOURCE_DIR} --outdir ${OUTPUT_DIR}")
+	JOB_ID_DEMUXLETVCF=`echo $JOB_STRING_DEMUXLETVCF | awk '{print $4}'`
+	DEPENDS="afterok:${JOB_ID_DEMUXLETVCF}"
 else
-	echo "Step ${STEP} [Concatenate Birdseed] was skipped due to command line input (-x ${SKIP})."
+	echo "Step ${STEP} [Make Demuxlet VCF] was skipped due to command line input (-x ${SKIP})."
 	DEPENDS=""
 fi
 #---------------------------------------------------------------------------------------------
