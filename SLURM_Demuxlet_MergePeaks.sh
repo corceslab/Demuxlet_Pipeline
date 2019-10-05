@@ -1,9 +1,9 @@
 #!/bin/bash
 #Ryan Corces 11/27/18
-#---SLURM_SampleGenotypeMixup_MergePeaks.sh
+#---SLURM_Demuxlet_MergePeaks.sh
 #	Script expects argument #1 of input to be a path to the directory containing narrowPeak files
-#	SCRIPT EXPECTS GENOME TO BE hg38
-#Usage: bash /share/PI/howchang/users/mcorces/scripts/ATAC/ATAC_processPeaks.sh <PeakDIR>
+#	Script expects argument #2 of input to be a genome name ("hg38" or "hg19")
+#Usage: bash SLURM_Demuxlet_MergePeaks.sh <PeakDIR>
 #
 #THIS SCRIPT IS NOT MEANT TO BE CALLED FROM COMMAND LINE. THIS IS PART OF A PIPELINE.
 #

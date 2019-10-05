@@ -2,7 +2,7 @@
 #1/24/18
 #Last Updated 11/27/18
 #Ryan Corces
-#SLURM_SampleGenotypeMixup_concatBirdseed.R
+#SLURM_Demuxlet_concatBirdseed.R
 #
 #This program is meant to concatenate ATAC-seq birdseed-style files into a single matrix based on the "call" column.
 #Any row which has exclusively "-1" calls will be removed from the downstream matrix to conserve space.
@@ -12,7 +12,7 @@
 #NOTES:
 #usage - 
 #example - 
-#Rscript /share/PI/howchang/users/mcorces/scripts/ATAC/SLURM_SampleGenotypeMixup_concatBirdseed.R --inDir --outFile
+#Rscript SLURM_Demuxlet_concatBirdseed.R --inDir --outFile
 #where:
 #--inDir </path/to/inputMpileupMatrix.txt>
 #--outFile </path/to/outfile.txt>

@@ -9,12 +9,12 @@
 #SBATCH --partition=howchang,sfgf   #array jobs are only submitted to howchang and sfgf to avoid job limit quotas on normal
 ##############################################################################################
 #Ryan Corces 11/27/18
-#---SLURM_SampleGenotypeMixup_varscanGenotype.sh
+#---SLURM_Demuxlet_varscanGenotype.sh
 #	Script expects argument #1 of input to be a full path to a file containing the manifest of BAM files to be genotyped. In format <FilePath BAM>
 #	Script expects argument #2 of input to be a BED file. Genotyping will only be performed in regions annotated in the input BED file to save time.
 #	Script expects argument #3 of input to be the full path to an output directory. All files will be placed there, including log files.
 #
-#Usage: bash /share/PI/howchang/users/mcorces/scripts/ATAC/SLURM_SampleGenotypeMixup_varscanGenotype.sh <Input_Manifest> <BED_File> <OUTDIR>
+#Usage: bash SLURM_Demuxlet_varscanGenotype.sh <Input_Manifest> <BED_File> <OUTDIR>
 #
 #THIS SCRIPT IS NOT MEANT TO BE CALLED FROM COMMAND LINE. THIS IS PART OF A PIPELINE.
 #

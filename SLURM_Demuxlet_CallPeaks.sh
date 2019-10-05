@@ -9,7 +9,7 @@
 #SBATCH --partition=howchang,sfgf   #array jobs are only submitted to howchang and sfgf to avoid job limit quotas on normal
 ##############################################################################################
 #Ryan Corces 11/27/18
-#---SLURM_SampleGenotypeMixup_CallPeaks.sh
+#---SLURM_Demuxlet_CallPeaks.sh
 #	Script expects argument #1 of input to be a full path to a file containing the manifest of BAM files to be processed. In format <BAMFilePath>
 #	Script expects argument #2 of input to be a full path to the output directory.
 #

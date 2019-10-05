@@ -2,7 +2,7 @@
 #1/22/18
 #Last Updated 11/27/18
 #Ryan Corces
-#SLURM_SampleGenotypeMixup_makeBirdseed.R
+#SLURM_Demuxlet_makeBirdseed.R
 #
 #This program is meant to convert mpileup files to be compatible with birdseed data files. It takes a VCF file from
 #samtools mpileup generated using SLURM_ATAC_mpileupFromBed.sh and makes "confident" birdseed-style genotype calls
@@ -13,7 +13,7 @@
 #NOTES:
 #usage - 
 #example - 
-#Rscript /path/to/SLURM_SampleGenotypeMixup_makeBirdseed.R --input </path/to/inputMpileupMatrix.txt> --affx </path/to/affxSNP6_metadata.txt> --outdir </path/to/outputDirectory>
+#Rscript SLURM_Demuxlet_makeBirdseed.R --input </path/to/inputMpileupMatrix.txt> --affx </path/to/affxSNP6_metadata.txt> --outdir </path/to/outputDirectory>
 #where:
 #--input </path/to/inputMpileupMatrix.txt>
 #--affx </path/to/affxSNP6_metadata.txt>

@@ -9,7 +9,7 @@
 #SBATCH --partition=howchang,sfgf   #array jobs are only submitted to howchang and sfgf to avoid job limit quotas on normal
 ##############################################################################################
 #Ryan Corces 7/5/18
-#---SLURM_SampleGenotypeMixup_makeBirdseed.sh
+#---SLURM_Demuxlet_makeBirdseed.sh
 #This script is meant to be used when you are only comparing ATAC data to itself rather than to SNP array data
 #
 #	Script expects argument #1 of input to be a full path to a file containing the manifest of vcf files to be converted to birdseed format. In format <FilePath VCF>
@@ -19,7 +19,7 @@
 #								First row should have a header!
 #	Script expects argument #4 of input to be the full path to an output directory. All files will be placed there, including log files.
 #
-#Usage: bash /share/PI/howchang/users/mcorces/scripts/ATAC/SLURM_SampleGenotypeMixup_makeBirdseed.sh <Input_Manifest> <affymetrix file> <OUTDIR>
+#Usage: bash SLURM_Demuxlet_makeBirdseed.sh <Input_Manifest> <affymetrix file> <OUTDIR>
 #
 #THIS SCRIPT IS NOT MEANT TO BE CALLED FROM COMMAND LINE. THIS IS PART OF A PIPELINE.
 #

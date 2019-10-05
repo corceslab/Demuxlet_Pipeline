@@ -9,12 +9,12 @@
 #SBATCH --partition=howchang,sfgf   #array jobs are only submitted to howchang and sfgf to avoid job limit quotas on normal
 ##############################################################################################
 #Ryan Corces 12/2/17
-#---SLURM_SampleGenotypeMixup_mpileup.sh
+#---SLURM_Demuxlet_mpileup.sh
 #	Script expects argument #1 of input to be a full path to a file containing the manifest of BAM files to be genotyped. In format <FilePath BAM>
 #	Script expects argument #2 of input to be a BED file. mpileup will only be generated in single base locations denoted in this bed file.
 #	Script expects argument #3 of input to be the full path to an output directory. All files will be placed there, including log files.
 #
-#Usage: bash /share/PI/howchang/users/mcorces/scripts/ATAC/SLURM_SampleGenotypeMixup_mpileup.sh <Input_Manifest> <BED_File> <OUTDIR>
+#Usage: bash SLURM_Demuxlet_mpileup.sh <Input_Manifest> <BED_File> <OUTDIR>
 #
 #THIS SCRIPT IS NOT MEANT TO BE CALLED FROM COMMAND LINE. THIS IS PART OF A PIPELINE.
 #

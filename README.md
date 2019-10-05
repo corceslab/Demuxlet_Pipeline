@@ -46,7 +46,7 @@ This code applies to the following software versions which must be loadable with
 
 This code requires the following R packages to be installed:
 
-	optparse, foreach, doParallel, ggplot2, seqinr
+	optparse, foreach, doParallel, ggplot2, seqinr, matrixStats
 
 ## NOTES:
 1) You may brush up against the per-user job number submission limit depending on how many samples you are trying to run. I'm not sure what the actual limit is but this certainly happens when running more than 750 samples. In this case, the pipeline wont finish properly.
