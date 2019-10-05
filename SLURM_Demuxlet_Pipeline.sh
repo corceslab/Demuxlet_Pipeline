@@ -124,7 +124,7 @@ do
 	
 	if [ ! -f $INDEX ];
 	then
-		echo -e "Index file does not exist for ${SAMPLE}"
+		echo -e "Index file does not exist for ${SAMPLE} -- ${BAM}"
 		FAILED=1
 	fi
 done < $MANIFEST
