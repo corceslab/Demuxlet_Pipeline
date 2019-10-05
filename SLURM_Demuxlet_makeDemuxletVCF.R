@@ -59,7 +59,7 @@ if(is.null(opt$input) || is.null(opt$source) || is.null(opt$outdir)){
 
 in_dir <- opt$input
 source_dir <- opt$source
-out_dir <- opt$outdir
+out_dir <- paste0(opt$outdir,"/demuxlet")
 
 print(paste("input dir = ",opt$input),sep="")
 print(paste("output dir = ",opt$outdir),sep="")
@@ -244,7 +244,8 @@ demuxlet_df <- demuxlet_df[grep(pattern = "_", x = demuxlet_df$CHROM, invert = T
 
 #reorder snps to be in chromosome numeric order
 chr_numbers <- gsub(pattern = "chr", replacement = "", x = demuxlet_df$CHROM)
-chr_numbers <- gsub(pattern = "X", replacement = "99", x = chr_numbers)
+chr_numbers <- gsub(pattern = "X", replacement = "98", x = chr_numbers)
+chr_numbers <- gsub(pattern = "Y", replacement = "99", x = chr_numbers)
 demuxlet_df <- demuxlet_df[order(as.numeric(chr_numbers)),]
 
 colnames(demuxlet_df)[1] <- paste0("#",colnames(demuxlet_df)[1])
