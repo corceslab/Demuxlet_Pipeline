@@ -13,7 +13,7 @@
 #where:
 # --input </path/to/birdseed/directory/> -- directory contains ".affx" files
 # --source </path/to/directory/containing/this/Rscript/>
-# --outdir </path/to/outputDirectory>
+# --outdir </path/to/outputDirectory> the actual output directory will be outdir/demuxlet
 #
 #Optional Arguments:
 # --techRep </path/to/manifest/file/containing/techRepInfo.txt> -- Column 3 should contain the tech rep info for each sample 
