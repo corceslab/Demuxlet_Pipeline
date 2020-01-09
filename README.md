@@ -1,4 +1,4 @@
-# Demuxlet Mixup
+# Demuxlet Pipeline
 Pipeline used to identify sample mixups based on genotyping of NGS reads.
 
 This pipeline contains a controller script [SLURM_Demuxlet_Pipeline.sh] and a series of auxilary bash and R scripts that are called at run time and queued as jobs with SLURM dependencies.
