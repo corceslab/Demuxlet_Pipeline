@@ -6,11 +6,12 @@
 #	where Input_Manifest is a tab-delimited file with each line representing a single BAM file in the format <Sample Name> \t <File_path_BAM>
 #
 #Other options include:
+#	-v  Full path to the varscan .jar file to be used for genotyping (for example /share/PI/howchang/users/mcorces/tools/varscan/VarScan.v2.4.3.jar).
 #	-p 	Full directory path to a directory containing MACS2 peak calls (.narrowPeak format) for each sample in format <Sample Name>_peaks.narrowPeak
 #		This option, when used, will skip the peak calling step.
 #	-o 	Full directory path to the desired output directory
 #	-x	Skip to this numbered step (must be an integer)
-#	-g <GENOME> = This option tells the pipeline which genome to use. Current supported values are "hg38" (default) and "hg19"
+#	-g <GENOME> = This option tells the pipeline which genome to use. Currently, only supported value is "hg38"!
 #
 #Code applies to the following software versions:
 #bedtools v2.26.0
@@ -27,6 +28,7 @@
 #REQUIREMENTS:
 #macs2 needs to runable when called as "macs2"
 #utilizes my GENOMES directory / directory structure
+#
 ##############################################################################################
 #GLOBAL VARIABLES:
 #Default is to clean directories and NOT call loops. Can be over-ridden by command line options
@@ -46,11 +48,12 @@ MPILEUP_REGIONS_PATH=${SOURCE_DIR}/SLURM_Demuxlet_mpileup.sh
 MAKE_BIRDSEED_PATH=${SOURCE_DIR}/SLURM_Demuxlet_makeBirdseed.sh
 CONCAT_BIRDSEED_PATH=${SOURCE_DIR}/SLURM_Demuxlet_concatBirdseed.R
 DEMUXLET_VCF_PATH=${SOURCE_DIR}/SLURM_Demuxlet_makeDemuxletVCF.R
+VARSCAN_PATH=/share/PI/howchang/users/mcorces/tools/varscan/VarScan.v2.4.3.jar
 GENOME="hg38" #This can be changed at runtime using -g
 ##############################################################################################
 #MAIN:
 #Handle command line inputs using getopts
-while getopts ":m:o:p:x:g:" opt; do
+while getopts ":m:v:o:p:x:g:" opt; do
 	case $opt in
 	m)
 		if [[ -f ${OPTARG} ]];
@@ -61,6 +64,17 @@ while getopts ":m:o:p:x:g:" opt; do
 				echo "ERROR --- -m flag observed but suggested MANIFEST does not exist: ${OPTARG}" >&2
 				exit 1
 		fi
+		;;
+	v)
+		if [[ -f ${OPTARG} ]];
+			then
+				echo "-v flag observed. VARSCAN_PATH set to ${OPTARG}." >&2
+				VARSCAN_PATH=${OPTARG}
+			else
+				echo "ERROR --- -v flag observedbut VARSCAN_PATH jar file not does not exist: ${OPTARG}" >&2
+				exit 1
+		fi
+		OUTPUT_DIR=${OPTARG}
 		;;
 	o)
 		if [[ -d ${OPTARG} ]];
@@ -221,7 +235,7 @@ VCF_DIR=${OUTPUT_DIR}/vcf
 if [ "$SKIP" -le "$STEP" ];
 then
 	mkdir -p ${VCF_DIR}
-	JOB_STRING_VARSCAN=$(sbatch --dependency=${DEPENDS} --array=1-${NUM_SAMPLES} ${GENOTYPE_PEAKS_PATH} ${MANIFEST} ${PEAK_DIR}/MergedPeaks.srt.mrg.flt.narrowPeak ${VCF_DIR} ${GENOME})
+	JOB_STRING_VARSCAN=$(sbatch --dependency=${DEPENDS} --array=1-${NUM_SAMPLES} ${GENOTYPE_PEAKS_PATH} ${MANIFEST} ${PEAK_DIR}/MergedPeaks.srt.mrg.flt.narrowPeak ${VCF_DIR} ${GENOME} ${VARSCAN_PATH})
 	JOB_ID_VARSCAN=`echo $JOB_STRING_VARSCAN | awk '{print $4}'`
 	DEPENDS="afterok:${JOB_ID_VARSCAN}"
 else

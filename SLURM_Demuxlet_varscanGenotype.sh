@@ -27,6 +27,7 @@ MANIFEST=$1
 PEAKS=$2
 OUTDIR=$3
 GENOME=$4
+VARSCAN_PATH=$5
 
 ##############################################################################################
 FASTA=${GENOMES}/${GENOME}/${GENOME}.fa
@@ -50,5 +51,5 @@ else
 	echo -e "No VCF genotyping file found for ${SAMPLE}. Submitting!"
 	module --ignore-cache load bedtools/S2/2.26.0
 	module --ignore-cache load samtools/S2/1.5
-	samtools mpileup -l $PEAKS -B -f ${FASTA} $BAM | java -jar /share/PI/howchang/users/mcorces/tools/varscan/VarScan.v2.4.3.jar mpileup2snp --min-coverage 5 --min-reads2 2 --min-var-freq 0.1 --strand-filter 1 --output-vcf 1 | grep -vE \"^#\" | awk 'BEGIN{OFS="\t"} {print $1, $2-1, $2, $3, $4, $5, $6, $7, $8, $9, $10}' >${OUTDIR}/${VCF} 
+	samtools mpileup -l $PEAKS -B -f ${FASTA} $BAM | java -jar ${VARSCAN_PATH} mpileup2snp --min-coverage 5 --min-reads2 2 --min-var-freq 0.1 --strand-filter 1 --output-vcf 1 | grep -vE \"^#\" | awk 'BEGIN{OFS="\t"} {print $1, $2-1, $2, $3, $4, $5, $6, $7, $8, $9, $10}' >${OUTDIR}/${VCF} 
 fi
