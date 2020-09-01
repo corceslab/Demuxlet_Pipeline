@@ -99,7 +99,7 @@ saveRDS(object = call, file = paste0(out_dir,"/demuxlet_SNP-call.rds"))
 nonZero_depth <- depth[which(rowSums(depth) > 0),]
 nonZero_call <- call[which(rowSums(depth) > 0),]
 saveRDS(object = nonZero_depth, file = paste0(out_dir,"/demuxlet_SNP-depth_nonZeroDepth.rds"))
-saveRDS(object = nonZero_call, file = paste0(out_dir,"/demuxlet_SNP-call_nonZeroDepth.rds"))
+saveRDS(object = nonZero_call, file = paste0(out_dir,"/demuxlet_SNP-call_nonZeroCall.rds"))
 
 #--------------------------------------------------------------------
 #Merge techReps if necessary
@@ -220,10 +220,10 @@ rownames(genotype_prob) <- rownames(nonZero_call)
 lookup <- c("-1" = "0|0:1:0.333,0.333,0.333", "0" = "0|0:0:1,0,0", "1" = "0|1:0.333:0,1,0", "2" = "1|1:2:0,0,1")
 
 for (x in 1:ncol(genotype_prob)) {
-  print(x)
-  for (y in 1:nrow(genotype_prob)) {
-    genotype_prob[y,x] <- lookup[as.character(nonZero_call[y,x])]
-  }
+  genotype_prob[which(as.character(nonZero_call[,x]) == "-1"),x] <- lookup["-1"]
+  genotype_prob[which(as.character(nonZero_call[,x]) == "0"),x] <- lookup["0"]
+  genotype_prob[which(as.character(nonZero_call[,x]) == "1"),x] <- lookup["1"]
+  genotype_prob[which(as.character(nonZero_call[,x]) == "2"),x] <- lookup["2"]
 }
 
 #create final dataframe
