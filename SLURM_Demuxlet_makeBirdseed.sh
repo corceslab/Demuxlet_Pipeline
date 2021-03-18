@@ -4,7 +4,7 @@
 #SBATCH --ntasks=1                  # Run a single task
 #SBATCH --mem-per-cpu=6400           # Memory per processor
 #SBATCH --cpus-per-task=1
-#SBATCH --time=08:00:00             # Time limit hrs:min:sec
+#SBATCH --time=48:00:00             # Time limit hrs:min:sec
 #SBATCH --output=./logs/makeBirdseed_array_%A-%a.out    # Standard output and error log
 #SBATCH --partition=howchang,sfgf   #array jobs are only submitted to howchang and sfgf to avoid job limit quotas on normal
 ##############################################################################################
