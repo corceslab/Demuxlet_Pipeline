@@ -124,6 +124,7 @@ if(!file.exists(snp_outfile)) {
 
   write.table(snps, snp_outfile,sep="\t", col.names = NA, quote = FALSE)
   } else {
+    print("snp_outfile present. reading in from disk and continuing.")
     snps <- read.table(file = snp_outfile, header = TRUE, sep = "\t", row.names = 1, stringsAsFactors = FALSE)
   }
 
@@ -183,6 +184,8 @@ if(!file.exists(affx_outfile)) {
   }
   
   write.table(affxSNPs, affx_outfile,sep="\t", col.names = NA, quote = FALSE)
+} else {
+  print("affx_outfile present. skipping creation...")
 }
 
 print(paste("End",date(),sep=" - "))
