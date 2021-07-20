@@ -54,17 +54,13 @@ This code requires the following R packages to be installed:
 
 ## USAGE:
 	bash /path/to/SLURM_Demuxlet_Pipeline.sh -m <Input_Manifest> ... <other options>
-	where Input_Manifest is a tab-delimited file with each line representing a single BAM file in the format <Sample Name> \t <File_path_BAM> \t <condition> \t <bioRepID>
-	where condition is the sample type (for example, cancer type from TCGA, or brain region from AD, or brain cohort).
-	where bioRepID is an identifier that is shared across all samples from the same biological donor.
-
+	where Input_Manifest is a tab-delimited file with each line representing a single BAM file in the format <Sample Name> \t <File_path_BAM>
+	
 	Other options include:
 	-p 	Full directory path to a directory containing MACS2 peak calls (.narrowPeak format) for each sample in format <Sample Name>_peaks.narrowPeak
 		This option, when used, will skip the peak calling step.
 	-o 	Full directory path to the desired output directory
 	-x	Skip to this numbered step (must be an integer)
-
-Note --- I dont think that the condition and bioRepID in the manifest are used in the demuxlet pipeline.
 
 ## TEST USAGE:
 THIS NEEDS TO BE TESTED AND UPDATED.
