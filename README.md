@@ -1,16 +1,16 @@
-# SampleGenotypeMixup
-Pipeline used to identify sample mixups based on genotyping of NGS reads.
+# Demuxlet Pipeline
+This pipeline is used to genotype bulk ATAC-seq data and create an input VCF file for use with Demuxlet to identify genotype-based multiplets in single-cell data.
 
 This pipeline contains a controller script [SLURM_Demuxlet_Pipeline.sh] and a series of auxilary bash and R scripts that are called at run time and queued as jobs with SLURM dependencies.
 
 ## PIPELINE COMPONENTS:
 
-	SLURM_SampleGenotypeMixup_Pipeline.sh
+	SLURM_Demuxlet_Pipeline.sh
 		STEP1: Call peaks in data. This pipeline was designed for ATAC-seq. Calling peaks lets you quickly identify regions of high read count which could be used for genotyping purposes. This limits the search space for genotyping and increases speed.
 			SLURM_Demuxlet_CallPeaks.sh
 		STEP2: Merge peaks called in all samples. Merging the peak regions creates a union set of regions to be genotyped across all samples.
 			SLURM_Demuxlet_MergePeaks.sh
-		STEP3: Genotyping the merged peak regions in every sample using Varscan.
+		STEP3: Genotyping within the merged peak regions in every sample using Varscan.
 			SLURM_Demuxlet_varscanGenotype.sh
 		STEP4: Merge all resultant VCF files from Varscan. This doesnt use a script, just a multipart bash one-liner
 		STEP5: Use bedtools to merge (without bookending) all of the unique single-base positions that should be re-genotyped across all samples. This represents the union set of putative positions containing SNPs.
@@ -33,7 +33,7 @@ The auxilary scripts utilize my GENOMES directory / directory structure which is
 	${GENOMES}/hg38/hg38_NumtS_Regions.bed
 
 ## DEPENDENCIES:
-This code applies to the following software versions which must be loadable with the given commands:
+This code has been verified to work with the following software versions which must be loadable with the given commands:
 
 	bedtools v2.26.0	- module load bedtools/S2/2.26.0
 	samtools v1.5		- module load samtools/S2/1.5
